@@ -126,7 +126,9 @@ export default function Page() {
   }
 
   async function startMic() {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     try {
+      if (isMobile) throw new Error("skip meter on phones");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       const ctx = new AudioContext();
@@ -149,7 +151,7 @@ export default function Page() {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) return alert("Use Chrome (desktop or Android).");
     const r = new SR();
-    r.continuous = true;
+    r.continuous = !isMobile;
     r.interimResults = true;
     r.lang = langRef.current;
     r.onstart = () => setErr("");
